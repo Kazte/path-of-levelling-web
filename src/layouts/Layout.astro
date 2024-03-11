@@ -1,51 +1,71 @@
 ---
 interface Props {
-	title: string;
+  title: string;
 }
 
 const { title } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="description" content="Astro description" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<title>{title}</title>
-	</head>
-	<body>
-		<slot />
-	</body>
+<html lang='en'>
+  <head>
+    <meta charset='UTF-8' />
+    <meta name='description' content='Astro description' />
+    <meta name='viewport' content='width=device-width' />
+    <link rel='icon' type='image/svg+xml' href='/favicon.svg' />
+    <meta name='generator' content={Astro.generator} />
+    <title>{title}</title>
+  </head>
+  <body class='bg-background'>
+    <header
+      class='bg-primary text-black flex flex-row justify-between items-center'
+    >
+      <h1 class='text-4xl'>Path of Levelling</h1>
+      <nav>
+        <!-- downalod from github -->
+        <a
+          href='https://github.com/Kazte/path-of-levelling/releases'
+          class='link'
+          target='_blank'>Download</a
+        >
+      </nav>
+    </header>
+    <slot />
+    <footer class='bg-primary text-black flex flex-row justify-between'>
+      <p>© {new Date().getFullYear()} Path of Levelling</p>
+      <p>
+        Created by <a
+          href='https://www.github.com/kazte'
+          class='link'
+          target='_blank'>kazte</a
+        >
+      </p>
+    </footer>
+  </body>
 </html>
 <style is:global>
-	:root {
-		--accent: 136, 58, 234;
-		--accent-light: 224, 204, 250;
-		--accent-dark: 49, 10, 101;
-		--accent-gradient: linear-gradient(
-			45deg,
-			rgb(var(--accent)),
-			rgb(var(--accent-light)) 30%,
-			white 60%
-		);
-	}
-	html {
-		font-family: system-ui, sans-serif;
-		background: #13151a;
-		background-size: 224px;
-	}
-	code {
-		font-family:
-			Menlo,
-			Monaco,
-			Lucida Console,
-			Liberation Mono,
-			DejaVu Sans Mono,
-			Bitstream Vera Sans Mono,
-			Courier New,
-			monospace;
-	}
+  html {
+    font-family: system-ui, sans-serif;
+    color: #fff;
+  }
+
+  body {
+    display: flex;
+    flex-flow: column;
+    max-width: 100vw;
+    min-height: 100vh;
+  }
+
+  main {
+    flex: 1;
+  }
+  header,
+  footer {
+    padding: 1rem;
+    text-align: center;
+  }
+
+  .link {
+    text-decoration: underline;
+  }
 </style>
