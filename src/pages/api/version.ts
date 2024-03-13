@@ -44,25 +44,18 @@ export const GET: APIRoute = async ({ request }) => {
       .replace('See the assets to download this version and install.', '')
       .replace(/\r\n/g, '\n'),
     pub_date: latest_release.published_at,
-    platforms: {
-      'windows-x86_64': {
-        signature: '',
-        url: ''
-      }
-    }
+    signature: '',
+    url: ''
   };
 
-  const platforms = [['windows-x86_64', 'x64_en-US.msi.zip']];
-
   for (const asset of latest_release.assets) {
-    for (const [platform, filename] of platforms) {
-      const signatureResponse = await fetch(asset.browser_download_url);
-      const signature = await signatureResponse.text();
+    if (asset.name.endsWith('.sig')) {
+      const signature_response = await fetch(asset.browser_download_url);
+      const signature = await signature_response.text();
 
-      if (asset.name.includes(filename)) {
-        release_response.platforms[platform].url = asset.browser_download_url;
-        release_response.platforms[platform].signature = signature;
-      }
+      release_response.signature = signature;
+    } else {
+      release_response.url = asset.browser_download_url;
     }
   }
 
@@ -90,14 +83,6 @@ interface ReleaseResponse {
   version: string;
   notes: string;
   pub_date: string;
-  platforms: Platforms;
-}
-
-interface Platforms {
-  [key: string]: Platform;
-}
-
-interface Platform {
   signature: string;
   url: string;
 }
