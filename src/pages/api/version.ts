@@ -9,6 +9,7 @@ export const GET: APIRoute = async ({ request }) => {
   const arch = urlParams.get('arch');
   const target = urlParams.get('target');
 
+  console.log('[GET] /api/version');
   console.log('version:', version);
   console.log('arch:', arch);
   console.log('target:', target);
@@ -23,13 +24,15 @@ export const GET: APIRoute = async ({ request }) => {
     });
   }
 
-  const latest_version = getVersionNumberFromString(latest_release.tag_name);
-  const current_version = getVersionNumberFromString(version!);
+  const latest_version = getReleaseFromString(latest_release.tag_name);
+  const current_version = getReleaseFromString(version!);
 
   // If the latest version is equal to the current version,
   // return 204 to prevent the user from downloading the same version again
 
-  if (latest_version <= current_version) {
+  if (compareVersions(latest_version, current_version) === 0) {
+    console.log('[GET] /api/version response: 204');
+
     return new Response(null, {
       status: 204
     });
@@ -59,6 +62,8 @@ export const GET: APIRoute = async ({ request }) => {
     }
   }
 
+  console.log('[GET] /api/version response:', release_response.version);
+
   return new Response(JSON.stringify(release_response), {
     status: 200,
     headers: {
@@ -75,8 +80,33 @@ async function getLatestRelease() {
   return data;
 }
 
-function getVersionNumberFromString(version: string) {
-  return version.replace('v', '').split('.').map(Number).join('');
+function getReleaseFromString(version: string): Release {
+  return {
+    tag_name: version,
+    major: parseInt(version.split('.')[0]),
+    minor: parseInt(version.split('.')[1]),
+    patch: parseInt(version.split('.')[2])
+  };
+}
+
+function compareVersions(a: Release, b: Release) {
+  if (a.major > b.major) return 1;
+  if (a.major < b.major) return -1;
+
+  if (a.minor > b.minor) return 1;
+  if (a.minor < b.minor) return -1;
+
+  if (a.patch > b.patch) return 1;
+  if (a.patch < b.patch) return -1;
+
+  return 0;
+}
+
+interface Release {
+  tag_name: string;
+  major: number;
+  minor: number;
+  patch: number;
 }
 
 interface ReleaseResponse {
